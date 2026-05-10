@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build" : "tsc -b --clean && tsc -b",
-    "dev" : "npm run build && ts-node ./src/server.ts",
-    "start" : "npm run build && node ./dist/server.js",
+    "build": "tsc -b --clean && tsc -b",
+    "dev": "npm run build && ts-node ./src/server.ts",
+    "start": "npm run build && node ./dist/server.js",
     "lint": "eslint .",
-    "prettier:format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,md}\""
+    "prettier:format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
