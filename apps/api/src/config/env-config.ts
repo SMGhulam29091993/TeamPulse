@@ -12,7 +12,7 @@ switch(process.env.NODE_ENV === 'development'){
 }
 
 export const config =  {
-    port : Number(process.env.PORT) ?? 3000,
+    port : Number.isFinite(Number(process.env.PORT)) ? Number(process.env.PORT) :  3000,
     host : process.env.HOST as string ?? 'localhost',
 }
 
