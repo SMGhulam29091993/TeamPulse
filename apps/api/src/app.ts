@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 app.use(cookieParser());
 
-app.use('/', (_req : Request, res : Response) => {
+app.get('/', (_req : Request, res : Response) => {
     res.send('Hello World!');
 });
 
