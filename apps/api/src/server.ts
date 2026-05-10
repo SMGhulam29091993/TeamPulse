@@ -1,10 +1,14 @@
 import app from "./app";
 import "colors";
+import dotenv from 'dotenv';
+import { config } from "./config/env-config";
 
-const PORT = Number(process.env.PORT) || 3000;
-const HOST = process.env.HOST || '127.0.0.1';
+dotenv.config();
 
-const server = app.listen(PORT, HOST, () => {
+const PORT = config.port;
+const HOST = config.host;
+
+const server = app.listen(Number(PORT), HOST, () => {
     console.log(`Server is running on http://${HOST}:${PORT}`.bgGreen);
 });
 
