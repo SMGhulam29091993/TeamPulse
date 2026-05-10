@@ -8,13 +8,15 @@
       "outputs": [".next/**", "dist/**", "!.next/cache/**"]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "env": ["NODE_ENV", "PORT", "HOST"]
     },
     "check-types": {
       "dependsOn": ["^check-types"]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"],
+      "env": ["NODE_ENV", "PORT", "HOST"],
       "outputs": []
     },
     "dev": {
