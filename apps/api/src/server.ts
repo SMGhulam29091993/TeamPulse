@@ -14,4 +14,5 @@ const server = app.listen(Number(PORT), HOST, () => {
 
 server.on('error', (err) => {
     console.error('Error starting server:'.bgRed, err);
+    process.exit(1);
 });
