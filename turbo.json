@@ -9,14 +9,32 @@
     },
     "lint": {
       "dependsOn": ["^lint"],
-      "env": ["NODE_ENV", "PORT", "HOST"]
+      "env": [
+        "NODE_ENV",
+        "PORT",
+        "HOST",
+        "DB_USERNAME",
+        "DB_PASSWORD",
+        "DB_HOST",
+        "DB_PORT",
+        "DB_NAME"
+      ]
     },
     "check-types": {
       "dependsOn": ["^check-types"]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"],
-      "env": ["NODE_ENV", "PORT", "HOST"],
+      "env": [
+        "NODE_ENV",
+        "PORT",
+        "HOST",
+        "DB_USERNAME",
+        "DB_PASSWORD",
+        "DB_HOST",
+        "DB_PORT",
+        "DB_NAME"
+      ],
       "outputs": []
     },
     "dev": {
