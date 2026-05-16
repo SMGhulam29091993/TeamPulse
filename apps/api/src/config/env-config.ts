@@ -9,4 +9,10 @@ export const config = {
         ? Number(process.env.PORT)
         : 3000,
     host: (process.env.HOST as string) ?? 'localhost',
+    DB_USERNAME: (process.env.DB_USERNAME as string) ?? 'teamPulse',
+    DB_PASSWORD: (process.env.DB_PASSWORD as string) ?? 'postgres',
+    DB_HOST: (process.env.DB_HOST as string) ?? 'localhost',
+    DB_PORT: Number.isFinite(Number(process.env.DB_PORT))
+        ? Number(process.env.DB_PORT)
+        : 5432,
 };
