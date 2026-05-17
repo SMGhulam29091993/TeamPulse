@@ -4,6 +4,11 @@ const envFile =
     process.env.NODE_ENV === 'production' ? '.env' : '.env.development';
 dotenv.config({ path: envFile });
 
+const databaseUrl = process.env.DATABASE_URL?.trim();
+if (!databaseUrl) {
+    throw new Error('DATABASE_URL is required');
+}
+
 export const config = {
     port: Number.isFinite(Number(process.env.PORT))
         ? Number(process.env.PORT)
@@ -15,4 +20,5 @@ export const config = {
     DB_PORT: Number.isFinite(Number(process.env.DB_PORT))
         ? Number(process.env.DB_PORT)
         : 5432,
+    databaseUrl,
 };
