@@ -15,4 +15,5 @@ export const config = {
     DB_PORT: Number.isFinite(Number(process.env.DB_PORT))
         ? Number(process.env.DB_PORT)
         : 5432,
+    databaseUrl: (process.env.DATABASE_URL as string) ?? '',
 };

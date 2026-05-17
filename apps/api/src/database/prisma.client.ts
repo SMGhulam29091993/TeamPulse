@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import 'colors';
+import { config } from '../config/env-config';
 
 // Extend globalThis with a cached Prisma instance type.
 const globalForPrisma = globalThis as unknown as {
@@ -15,7 +16,9 @@ export const prisma =
         // Prisma 7 "client" engine requires either an adapter or accelerate URL.
         adapter: new PrismaPg(
             new Pool({
-                connectionString: process.env.DATABASE_URL,
+                connectionString: config.databaseUrl,
+                connectionTimeoutMillis: 5_000, // Optional: Set a connection timeout for faster failure in case of DB issues.
+                idleTimeoutMillis: 10_000, // Optional: Close idle connections after a certain time to prevent resource leaks.
             })
         ),
         // Keep verbose query logs in development, but reduce noise in production.
