@@ -38,6 +38,8 @@ yarn-error.log*
 .DS_Store
 *.pem
 
-.md
-
 tsconfig.tsbuildinfo
+
+
+# Ignore only local scratch docs if needed (example)
+docs/*.md
