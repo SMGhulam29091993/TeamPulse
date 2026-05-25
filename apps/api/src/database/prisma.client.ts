@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
-import 'colors';
 import { config } from '../config/env-config';
 
 // Extend globalThis with a cached Prisma instance type.
@@ -38,10 +37,10 @@ if (process.env.NODE_ENV !== 'production') {
 void prisma
     .$connect()
     .then(() => {
-        console.log('Connected to database successfully'.bgYellow);
+        console.log('Connected to database successfully');
     })
     .catch((error: unknown) => {
-        console.error('Failed to connect to database'.bgRed, error);
+        console.error('Failed to connect to database', error);
         process.exit(1); // Exit the process if the database connection fails, since the app likely can't function without it.
     });
 
