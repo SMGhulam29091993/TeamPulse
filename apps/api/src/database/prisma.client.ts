@@ -32,16 +32,4 @@ if (process.env.NODE_ENV !== 'production') {
     globalForPrisma.prisma = prisma;
 }
 
-// Attempt an eager connection once so startup logs show DB readiness clearly.
-// This is optional, but can help catch DB connection issues early and provide clearer logs.
-void prisma
-    .$connect()
-    .then(() => {
-        console.log('Connected to database successfully');
-    })
-    .catch((error: unknown) => {
-        console.error('Failed to connect to database', error);
-        process.exit(1); // Exit the process if the database connection fails, since the app likely can't function without it.
-    });
-
 export default prisma;
