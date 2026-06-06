@@ -4,7 +4,7 @@ import { AppError } from '../errors/appError';
 export class ErrorHandlerMiddleware {
     public static handleError(
         err: unknown,
-        req: Request,
+        _req: Request,
         res: Response,
         _next: NextFunction
     ) {
