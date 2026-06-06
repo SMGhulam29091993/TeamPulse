@@ -1,159 +1,212 @@
-# Turborepo starter
+<div align="center">
 
-This Turborepo starter is maintained by the Turborepo core team.
+# ⚡ TeamPulse
 
-## Using this example
+### AI-powered team productivity platform that turns inbox chaos into clarity.
 
-Run the following command:
+*Smart digests · Action item extraction · Team knowledge search*
 
-```sh
-npx create-turbo@latest
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?style=flat-square&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Turborepo](https://img.shields.io/badge/Turborepo-monorepo-EF4444?style=flat-square&logo=turborepo&logoColor=white)](https://turbo.build/)
+
+</div>
+
+---
+
+## The Problem
+
+Knowledge workers spend **28% of their workweek** managing email and **23% searching for information** that already exists somewhere in their organisation. Every morning starts with the same ritual — sifting through 80 unread emails, hunting through Slack threads for a decision made last Tuesday, re-reading a meeting transcript because someone forgot to write up the action items.
+
+**TeamPulse fixes this.**
+
+---
+
+## What It Does
+
+| Pillar | What it does |
+|---|---|
+| **Smart Inbox AI** | Generates a prioritised morning digest from your emails. Surfaces what needs your attention. Drafts context-aware replies. |
+| **Meeting Clarity** | Transcribes meetings in real time, extracts who owns which action item, and pushes tasks to Jira or Asana automatically. |
+| **Team Knowledge Graph** | Semantic search across your organisation's Slack, Drive, and docs. Answers "has anyone solved this before?" instantly. |
+
+---
+
+## Architecture
+
+TeamPulse is built as a **production-grade TypeScript monorepo** with a clean separation of concerns across every layer.
+
+```
+TeamPulse/
+├── apps/
+│   ├── api/          — Node.js + Express backend (OOP, SOLID, Repository pattern)
+│   └── web/          — Next.js 15 frontend (in progress)
+└── packages/
+    ├── ui/           — Shared component library
+    ├── eslint-config/
+    ├── typescript-config/
+    └── config-prettier/
 ```
 
-## What's inside?
+### Backend Architecture (`apps/api`)
 
-This Turborepo includes the following packages/apps:
+The backend is built with strict **OOP + SOLID principles** and **LLD patterns** throughout — not a typical Express tutorial layout.
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```
+src/
+├── modules/          ← Feature-based, not layer-based
+│   ├── auth/         — controller · service · repository · routes · types
+│   ├── user/         — controller · service · repository · routes · types
+│   └── digest/       — controller · service · repository · routes · types
+├── shared/
+│   ├── interfaces/   — IRepository · IService · IController
+│   ├── middleware/   — error · auth · validate
+│   ├── errors/       — AppError · NotFoundError · ValidationError
+│   └── utils/        — response shaping
+├── database/
+│   └── prisma.client.ts   ← Singleton pattern, connection-safe hot-reload
+└── types/
+    └── express.d.ts       ← req.user augmentation
 ```
 
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
+**Dependency flow — strictly enforced:**
+```
+Controller → IService → IRepository → PrismaClient
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+Services receive repository interfaces via constructor injection (Dependency Inversion). Services never touch Prisma directly. Repositories contain zero business logic.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+### Key Technical Decisions
 
-```sh
-turbo build --filter=docs
+**Single Node.js backend** — no Python microservice. LangChain JS handles all AI orchestration at near-parity with the Python library for the chains needed (summarisation, extraction, embeddings).
+
+**SSE over Socket.io** — digest delivery uses Server-Sent Events. A one-way stream from server to browser is all that's needed. No Redis adapter, no connection management overhead.
+
+**Explicit join tables** — many-to-many relations (User ↔ Workspace) use explicit Prisma models so role data can be stored on the relationship.
+
+**PrismaClient Singleton with globalThis cache** — prevents connection pool exhaustion on `tsx` hot-reload in development. Production skips the global cache for clean process restarts.
+
+---
+
+## Tech Stack
+
+### Backend
+- **Runtime:** Node.js 20 + TypeScript 5
+- **Framework:** Express.js
+- **ORM:** Prisma 7 with `@prisma/adapter-pg` (driver adapter)
+- **Database:** PostgreSQL 15
+- **AI:** LangChain JS, OpenAI / Anthropic
+- **Vector DB:** Pinecone
+- **Jobs:** BullMQ + Redis
+- **Auth:** OAuth2 (Google, Microsoft, GitHub) + session management
+
+### Frontend *(in progress)*
+- **Framework:** Next.js 15 (App Router)
+- **UI:** Tailwind CSS + shadcn/ui
+- **State:** React Query
+- **Real-time:** EventSource (SSE)
+
+### Infrastructure
+- **Monorepo:** Turborepo + pnpm workspaces
+- **Containerisation:** Docker Compose (local dev)
+- **CI:** Husky pre-commit hooks (lint + typecheck on every commit)
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js 20+
+- pnpm 9+
+- Docker + Docker Compose
+
+### Setup
+
+```bash
+# Clone the repo
+git clone https://github.com/your-username/TeamPulse.git
+cd TeamPulse
+
+# Install dependencies
+pnpm install
+
+# Start the database
+docker compose up -d
+
+# Set up environment variables
+cp apps/api/.env.example apps/api/.env.development
+# Fill in your DATABASE_URL and OAuth credentials
+
+# Run database migrations
+cd apps/api && pnpm prisma migrate dev
+
+# Start development servers
+pnpm turbo dev --filter=api
 ```
 
-Without global `turbo`:
+The API will be available at `http://localhost:3000`.
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+---
+
+## Development
+
+```bash
+# Run API in dev mode (hot-reload via tsx watch)
+pnpm turbo dev --filter=api
+
+# Type check
+pnpm turbo typecheck
+
+# Lint
+pnpm turbo lint
+
+# Build for production
+pnpm turbo build
 ```
 
-### Develop
+---
 
-To develop all apps and packages, run the following command:
+## Roadmap
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+- [x] Monorepo foundation (Turborepo + pnpm)
+- [x] Express server with OOP/SOLID architecture
+- [x] PostgreSQL + Prisma setup with connection pooling
+- [ ] Prisma schema design (User, Workspace, Digest, ActionItem)
+- [ ] Auth layer (OAuth2 + session management)
+- [ ] MS Graph integration (email + calendar)
+- [ ] BullMQ job queue infrastructure
+- [ ] LangChain AI orchestration (summarisation + extraction)
+- [ ] Digest pipeline (end to end)
+- [ ] REST API surface + Zod validation
+- [ ] SSE real-time delivery
+- [ ] Semantic search (Pinecone)
+- [ ] Next.js frontend
 
-```sh
-cd my-turborepo
-turbo dev
-```
+---
 
-Without global `turbo`, use your package manager:
+## Why This Stack
 
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
-```
+Every choice in this stack was made deliberately for a production MVP — not for a hackathon demo.
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+**TypeScript end-to-end** means type errors are caught at compile time, not in production. **Turborepo** means the frontend and backend share config, linting rules, and eventually types — with zero duplication. **Prisma** gives fully type-safe database access with a schema that acts as the single source of truth. **BullMQ** ensures the AI pipeline runs in the background without blocking HTTP responses.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+This is not a side project architecture that gets rewritten before launch. It's built to scale from day one.
 
-```sh
-turbo dev --filter=web
-```
+---
 
-Without global `turbo`:
+## Contributing
 
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+TeamPulse is in active development. If you're interested in contributing or following the build, watch the repo.
 
-### Remote Caching
+---
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+<div align="center">
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+Built with focus by [@your-username](https://github.com/your-username)
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+*Targeting Product Hunt launch — follow along*
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+</div>
