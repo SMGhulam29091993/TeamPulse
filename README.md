@@ -205,7 +205,7 @@ TeamPulse is in active development. If you're interested in contributing or foll
 
 <div align="center">
 
-Built with focus by [@your-username](https://github.com/your-username)
+Built with focus by [@SMGhulam29091993](https://github.com/SMGhulam29091993)
 
 *Targeting Product Hunt launch — follow along*
 
