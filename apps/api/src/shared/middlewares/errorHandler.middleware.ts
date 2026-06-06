@@ -1,0 +1,19 @@
+import { NextFunction, Request, Response } from 'express';
+import { AppError } from '../errors/appError';
+
+export class ErrorHandlerMiddleware {
+    public static handleError(
+        err: unknown,
+        req: Request,
+        res: Response,
+        _next: NextFunction
+    ) {
+        console.error(err);
+        if (err instanceof AppError) {
+            res.status(err.statusCode).json({ message: err.message });
+            return;
+        }
+
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
