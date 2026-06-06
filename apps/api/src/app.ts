@@ -1,12 +1,8 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Request, Response, type Express } from 'express';
-import prisma from './database/prisma.client';
 
 const app: Express = express();
-
-// Use the imported Prisma client instance instead of constructing a new one.
-prisma;
 
 const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
 
