@@ -1,6 +1,7 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Request, Response, type Express } from 'express';
+import { ErrorHandlerMiddleware } from './shared/middlewares/errorHandler.middleware';
 
 const app: Express = express();
 
@@ -29,5 +30,7 @@ app.use(cookieParser());
 app.get('/', (_req: Request, res: Response) => {
     res.send('Hello World!');
 });
+
+app.use(ErrorHandlerMiddleware.handleError);
 
 export default app;
