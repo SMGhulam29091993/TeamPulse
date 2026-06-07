@@ -10,3 +10,100 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id String @id @default(uuid())
+  firstName String
+  lastName String
+  username String @unique
+  email String @unique
+  hashedPassword String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workSpaces WorkSpace[]
+  workSpaceMembers WorkSpaceMembers[]
+  digests Digest[]
+  actionItems ActionItem[]
+}
+
+model WorkSpace {
+  id String @id @default(uuid())
+  name String
+  createdById String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [createdById], references : [id])
+  workSpaceMembers WorkSpaceMembers[]
+  digests Digest[]
+}
+
+model WorkSpaceMembers {
+  id String @id @default(uuid())
+  userId String
+  workSpaceId String
+  role Role @default(MEMBER)
+  joiningDate DateTime @default(now())
+  leavingDate DateTime?
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references : [id])
+  workSpace WorkSpace @relation(fields: [workSpaceId], references : [id])
+}
+
+model Digest {
+  id  String @id @default(uuid())
+  title String
+  content Json
+  requestedById String
+  status DigestStatus @default(PENDING)
+  workSpaceId String
+  zone Zone @default(EMAIL)
+  generatedAt DateTime?
+
+  user User @relation(fields: [requestedById], references : [id])
+  workSpace WorkSpace @relation(fields: [workSpaceId], references : [id])
+  actionItems ActionItem[]
+}
+
+model ActionItem {
+  id String @id @default(uuid())
+  task String
+  status ActionItemStatus @default(PENDING)
+  assignedToId String
+  digestId String
+  dueDate DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [assignedToId], references : [id])
+  digest Digest @relation(fields: [digestId], references : [id])
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+  OWNER
+}
+
+enum DigestStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum ActionItemStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+}
+
+enum Zone {
+  EMAIL
+  SLACK
+  TEAMS
+  GOOGLE_CHAT
+}
