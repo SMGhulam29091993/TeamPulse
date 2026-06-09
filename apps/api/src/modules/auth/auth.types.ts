@@ -29,3 +29,18 @@ export interface LoginDto {
 export interface LoginResponseDto {
     accessToken: string;
 }
+
+export interface CreateUserDto {
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+    hashedPassword: string;
+}
+
+export interface OtpDto {
+    otpHashed: string;
+    hashedIdentifier: string;
+    userId: string;
+    expiresAt: Date;
+}
