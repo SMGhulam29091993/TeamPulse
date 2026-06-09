@@ -86,8 +86,8 @@ model ActionItem {
 model OtpVerification {
   id String @id @default(uuid())
   userId String @unique
-  otpHashed String
-  hashedIdentifier String
+  otpHashed String 
+  hashedIdentifier String @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
