@@ -1,9 +1,13 @@
 import { IAuthRepository } from './auth.interface';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 import { CreateUserDto, OtpDto } from './auth.types';
 
 export class AuthRepository implements IAuthRepository {
     constructor(private readonly prisma: PrismaClient) {}
+
+    async findById(userId: string): Promise<User | null> {
+        return await this.prisma.user.findUnique({ where: { id: userId } });
+    }
 
     async findByEmail(email: string) {
         return await this.prisma.user.findUnique({ where: { email } });
