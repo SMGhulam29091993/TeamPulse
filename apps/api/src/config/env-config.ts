@@ -28,4 +28,12 @@ export const config = {
         : 587,
     smtpUser: (process.env.SMTP_USER as string) ?? '',
     smtpPass: (process.env.SMTP_PASS as string) ?? '',
+    //jwt secret
+    jwtSecret:
+        String(process.env.JWT_SECRET) ??
+        '1234567890!@#$%^&*()abnsjgshuhfuheauhfuihwuiH',
+
+    refreshJWTSecret:
+        String(process.env.REFRESH_JWT_SECRTET) ??
+        'suagckhadgchwgs123245678901!@#$%^&*(()',
 };
