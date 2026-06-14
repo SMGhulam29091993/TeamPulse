@@ -22,9 +22,41 @@ export class AuthService {
     public async register(dto: RegisterDto): Promise<RegisterResponseDto> {
         const { firstName, lastName, username, email, password } = dto;
 
+        const { otp, otpHashed, hashedIdentifier, identifier } =
+            await this.createOtp();
+
+        const content = otpTemplate(otp, firstName);
+
+        const subject = 'Your OTP for TeamPulse Email Verification';
+
         const existingUser = await this.authRepository.findByEmail(email);
-        if (existingUser) {
+        if (existingUser && existingUser.isEmailVerified) {
             throw new ValidationError('User with this email already exists');
+        }
+
+        let emailStatus: boolean;
+
+        if (existingUser && !existingUser.isEmailVerified) {
+            await this.authRepository.upsertOtp({
+                otpHashed,
+                hashedIdentifier,
+                userId: existingUser.id,
+                expiresAt: new Date(Date.now() + 1000 * 60 * 10),
+            });
+
+            emailStatus = await this.sendOtpEmail(
+                existingUser.email,
+                subject,
+                content
+            );
+
+            if (!emailStatus) {
+                throw new EmailError(
+                    'Failed to send email. Please try again after sometime...'
+                );
+            }
+
+            return { identifier };
         }
 
         const existingUsername =
@@ -43,10 +75,6 @@ export class AuthService {
             hashedPassword,
         });
 
-        const otp = this.generateOtp();
-        const { hashedIdentifier, identifier } = this.hashIdentifier();
-        const otpHashed = await this.hashOtp(otp);
-
         await this.authRepository.upsertOtp({
             otpHashed,
             hashedIdentifier,
@@ -54,10 +82,7 @@ export class AuthService {
             expiresAt: new Date(Date.now() + 10 * 60 * 1000),
         });
 
-        const content = otpTemplate(otp, firstName);
-
-        const subject = 'Your OTP for TeamPulse Email Verification';
-        const emailStatus = await this.sendOtpEmail(email, subject, content);
+        emailStatus = await this.sendOtpEmail(email, subject, content);
 
         if (!emailStatus) {
             throw new EmailError('Failed to send OTP email');
@@ -175,5 +200,18 @@ export class AuthService {
             accessToken,
             refreshToken,
         };
+    }
+
+    private async createOtp(): Promise<{
+        otp: string;
+        otpHashed: string;
+        hashedIdentifier: string;
+        identifier: string;
+    }> {
+        const otp = this.generateOtp();
+        const { hashedIdentifier, identifier } = this.hashIdentifier();
+        const otpHashed = await this.hashOtp(otp);
+
+        return { otp, otpHashed, hashedIdentifier, identifier };
     }
 }
