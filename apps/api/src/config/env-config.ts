@@ -14,11 +14,18 @@ export const config = {
         ? Number(process.env.PORT)
         : 3000,
     host: (process.env.HOST as string) ?? 'localhost',
-    DB_USERNAME: (process.env.DB_USERNAME as string) ?? 'teamPulse',
-    DB_PASSWORD: (process.env.DB_PASSWORD as string) ?? 'postgres',
-    DB_HOST: (process.env.DB_HOST as string) ?? 'localhost',
-    DB_PORT: Number.isFinite(Number(process.env.DB_PORT))
+    dbUsername: (process.env.DB_USERNAME as string) ?? 'teamPulse',
+    dbPassword: (process.env.DB_PASSWORD as string) ?? 'postgres',
+    dbHost: (process.env.DB_HOST as string) ?? 'localhost',
+    dbPort: Number.isFinite(Number(process.env.DB_PORT))
         ? Number(process.env.DB_PORT)
         : 5432,
     databaseUrl,
+    // SMTP configuration for email sending
+    smtpHost: (process.env.SMTP_HOST as string) ?? 'smtp.gmail.com',
+    smtpPort: Number.isFinite(Number(process.env.SMTP_PORT))
+        ? Number(process.env.SMTP_PORT)
+        : 587,
+    smtpUser: (process.env.SMTP_USER as string) ?? '',
+    smtpPass: (process.env.SMTP_PASS as string) ?? '',
 };
