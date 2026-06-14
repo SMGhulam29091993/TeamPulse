@@ -19,6 +19,7 @@ export interface VerifyOtpResponseDto {
     username: string;
     email: string;
     accessToken: string;
+    refreshToken: string;
 }
 
 export interface LoginDto {
@@ -28,6 +29,7 @@ export interface LoginDto {
 
 export interface LoginResponseDto {
     accessToken: string;
+    refreshToken: string;
 }
 
 export interface CreateUserDto {
