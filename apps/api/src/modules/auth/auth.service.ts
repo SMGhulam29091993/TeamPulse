@@ -1,11 +1,20 @@
-import { IAuthRepository } from './auth.interface';
-import { RegisterDto, RegisterResponseDto } from './auth.types';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
-import otpTemplate from '../../shared/templates/otpEmail';
-import { ValidationError } from '../../shared/errors/validationError';
 import { EmailError } from '../../shared/errors/emailError';
+import { NotFoundError } from '../../shared/errors/notFoundError';
+import { ValidationError } from '../../shared/errors/validationError';
 import { sendEmail } from '../../shared/lib/mailer';
+import otpTemplate from '../../shared/templates/otpEmail';
+import { tokens } from './../../shared/lib/token';
+import { IAuthRepository } from './auth.interface';
+import {
+    LoginDto,
+    LoginResponseDto,
+    RegisterDto,
+    RegisterResponseDto,
+    VerifyOtpDto,
+    VerifyOtpResponseDto,
+} from './auth.types';
 
 export class AuthService {
     constructor(private readonly authRepository: IAuthRepository) {}
@@ -51,6 +60,67 @@ export class AuthService {
         return { identifier };
     }
 
+    public async verifyEmail(dto: VerifyOtpDto): Promise<VerifyOtpResponseDto> {
+        const { otp, hashedIdentifier } = dto;
+
+        const otpRecord =
+            await this.authRepository.findOtpByIdentifier(hashedIdentifier);
+
+        if (!otpRecord || otpRecord.expiresAt < new Date()) {
+            throw new ValidationError('OTP has expired or is invalid');
+        }
+
+        const isOtpValid = await bcrypt.compare(otp, otpRecord.otpHashed);
+        if (!isOtpValid) {
+            throw new ValidationError('Invalid OTP');
+        }
+
+        await this.authRepository.verifyUser(otpRecord.userId);
+
+        const user = await this.authRepository.findById(otpRecord.userId);
+
+        if (!user) throw new NotFoundError('User not Found');
+
+        await this.authRepository.deleteOtp(hashedIdentifier);
+
+        const { accessToken, refreshToken } = await this.generateToken(
+            otpRecord.userId
+        );
+
+        return {
+            username: user.username,
+            email: user.email,
+            accessToken,
+            refreshToken,
+        };
+    }
+
+    public async login(dto: LoginDto): Promise<LoginResponseDto> {
+        const { email, password } = dto;
+
+        const existingUser = await this.authRepository.findByEmail(email);
+        if (!existingUser) throw new NotFoundError('User not found');
+
+        const isValidPassword = await bcrypt.compare(
+            password,
+            existingUser.hashedPassword
+        );
+
+        if (!isValidPassword)
+            throw new ValidationError('Incorrect Credentials');
+
+        if (!existingUser.isEmailVerified)
+            throw new ValidationError(
+                'Email not verified. Please verify it...'
+            );
+
+        const { accessToken, refreshToken } = await this.generateToken(
+            existingUser.id
+        );
+
+        return { accessToken, refreshToken };
+    }
+
     private async hashPassword(password: string): Promise<string> {
         return await bcrypt.hash(password, 10);
     }
@@ -88,5 +158,16 @@ export class AuthService {
             console.error('Failed to send OTP email', error);
             return false;
         }
+    }
+
+    private async generateToken(
+        userId: string
+    ): Promise<{ accessToken: string; refreshToken: string }> {
+        const { accessToken, refreshToken } = tokens(userId);
+
+        return {
+            accessToken,
+            refreshToken,
+        };
     }
 }
