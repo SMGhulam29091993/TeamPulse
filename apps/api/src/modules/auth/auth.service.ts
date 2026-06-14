@@ -27,6 +27,12 @@ export class AuthService {
             throw new ValidationError('User with this email already exists');
         }
 
+        const existingUsername =
+            await this.authRepository.findByUsername(username);
+
+        if (existingUsername)
+            throw new ValidationError('Username already exists!!!');
+
         const hashedPassword = await this.hashPassword(password);
 
         const user = await this.authRepository.create({
