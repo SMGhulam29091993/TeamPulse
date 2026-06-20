@@ -56,7 +56,7 @@ export class AuthService {
                 );
             }
 
-            return { hashedIdentifier };
+            return { identifier };
         }
 
         const existingUsername =
@@ -88,14 +88,14 @@ export class AuthService {
             throw new EmailError('Failed to send OTP email');
         }
 
-        return { hashedIdentifier };
+        return { identifier };
     }
 
     public async verifyEmail(dto: VerifyOtpDto): Promise<VerifyOtpResponseDto> {
-        const { otp, hashedIdentifier } = dto;
+        const { otp, identifier } = dto;
 
         const otpRecord =
-            await this.authRepository.findOtpByIdentifier(hashedIdentifier);
+            await this.authRepository.findOtpByIdentifier(identifier);
 
         if (!otpRecord || otpRecord.expiresAt < new Date()) {
             throw new ValidationError('OTP has expired or is invalid');
@@ -112,7 +112,7 @@ export class AuthService {
 
         if (!user) throw new NotFoundError('User not Found');
 
-        await this.authRepository.deleteOtp(hashedIdentifier);
+        await this.authRepository.deleteOtp(otpRecord.hashedIdentifier);
 
         const { accessToken, refreshToken } = await this.generateToken(
             otpRecord.userId
