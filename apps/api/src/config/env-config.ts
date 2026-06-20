@@ -9,6 +9,12 @@ if (!databaseUrl) {
     throw new Error('DATABASE_URL is required');
 }
 
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) throw new Error('JWT Secret Is Required!!!');
+
+const refreshJWTSecret = process.env.REFRESH_JWT_SECRET;
+if (!refreshJWTSecret) throw new Error('Refresh JWT Secret Is Required!!!');
+
 export const config = {
     port: Number.isFinite(Number(process.env.PORT))
         ? Number(process.env.PORT)
@@ -29,11 +35,6 @@ export const config = {
     smtpUser: (process.env.SMTP_USER as string) ?? '',
     smtpPass: (process.env.SMTP_PASS as string) ?? '',
     //jwt secret
-    jwtSecret:
-        String(process.env.JWT_SECRET) ??
-        '1234567890!@#$%^&*()abnsjgshuhfuheauhfuihwuiH',
-
-    refreshJWTSecret:
-        String(process.env.REFRESH_JWT_SECRTET) ??
-        'suagckhadgchwgs123245678901!@#$%^&*(()',
+    jwtSecret,
+    refreshJWTSecret,
 };
