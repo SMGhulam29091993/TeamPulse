@@ -1,4 +1,23 @@
-const otpTemplate = (otp: string, name: string) => `
+const escapeHtml = (value: string) =>
+  value.replace(/[&<>"]/g, (character) => {
+    switch (character) {
+      case '&':
+        return '&amp;';
+      case '<':
+        return '&lt;';
+      case '>':
+        return '&gt;';
+      case '"':
+        return '&quot;';
+      default:
+        return character;
+    }
+  });
+
+const otpTemplate = (otp: string, name: string) => {
+  const escapedName = escapeHtml(name);
+
+  return `
 <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 500px; margin: 40px auto; padding: 0; background-color: #f9fafb; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid #e5e7eb;">
   
   <div style="background: #4f46e5; padding: 32px 24px; text-align: center;">
@@ -6,7 +25,7 @@ const otpTemplate = (otp: string, name: string) => `
   </div>
 
   <div style="background: #ffffff; padding: 40px 32px; text-align: center;">
-    <p style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: #111827; text-align: left;">Hi ${name},</p>
+    <p style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: #111827; text-align: left;">Hi ${escapedName},</p>
     <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 24px; color: #4b5563; text-align: left;">Your one-time verification code is requested below. Please use this to complete your verification process.</p>
     
     <div style="background-color: #f3f4f6; border-radius: 8px; padding: 16px 24px; margin: 32px 0; display: inline-block; border: 1px solid #e5e7eb;">
@@ -24,5 +43,6 @@ const otpTemplate = (otp: string, name: string) => `
 
 </div>
 `;
+};
 
 export default otpTemplate;
