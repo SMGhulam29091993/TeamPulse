@@ -56,7 +56,7 @@ export class AuthService {
                 );
             }
 
-            return { identifier };
+            return { hashedIdentifier };
         }
 
         const existingUsername =
@@ -88,7 +88,7 @@ export class AuthService {
             throw new EmailError('Failed to send OTP email');
         }
 
-        return { identifier };
+        return { hashedIdentifier };
     }
 
     public async verifyEmail(dto: VerifyOtpDto): Promise<VerifyOtpResponseDto> {

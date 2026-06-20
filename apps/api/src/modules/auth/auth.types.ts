@@ -7,7 +7,7 @@ export interface RegisterDto {
 }
 
 export interface RegisterResponseDto {
-    identifier: string;
+    hashedIdentifier: string;
 }
 
 export interface VerifyOtpDto {
