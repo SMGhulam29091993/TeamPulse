@@ -1,5 +1,14 @@
 import { OtpVerification, User } from '@prisma/client';
-import { CreateUserDto, OtpDto } from './auth.types';
+import {
+    CreateUserDto,
+    LoginDto,
+    LoginResponseDto,
+    OtpDto,
+    RegisterDto,
+    RegisterResponseDto,
+    VerifyOtpDto,
+    VerifyOtpResponseDto,
+} from './auth.types';
 
 export interface IAuthRepository {
     findById(userId: string): Promise<User | null>;
@@ -12,4 +21,10 @@ export interface IAuthRepository {
         hashedIdentifier: string
     ): Promise<OtpVerification | null>;
     deleteOtp(hashedIdentifier: string): Promise<void>;
+}
+
+export interface IAuthService {
+    register(dto: RegisterDto): Promise<RegisterResponseDto>;
+    verifyEmail(dto: VerifyOtpDto): Promise<VerifyOtpResponseDto>;
+    login(dto: LoginDto): Promise<LoginResponseDto>;
 }
