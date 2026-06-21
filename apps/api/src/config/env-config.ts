@@ -19,6 +19,7 @@ export const config = {
     port: Number.isFinite(Number(process.env.PORT))
         ? Number(process.env.PORT)
         : 3000,
+    nodeEnv: process.env.NODE_ENV,
     host: (process.env.HOST as string) ?? 'localhost',
     dbUsername: (process.env.DB_USERNAME as string) ?? 'teamPulse',
     dbPassword: (process.env.DB_PASSWORD as string) ?? 'postgres',
@@ -37,4 +38,6 @@ export const config = {
     //jwt secret
     jwtSecret,
     refreshJWTSecret,
+    refreshMaxAge:
+        Number(process.env.REFRESH_MAX_AGE) ?? 1000 * 60 * 60 * 24 * 7,
 };
