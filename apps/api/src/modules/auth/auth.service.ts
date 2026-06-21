@@ -6,7 +6,7 @@ import { ValidationError } from '../../shared/errors/validationError';
 import { sendEmail } from '../../shared/lib/mailer';
 import otpTemplate from '../../shared/templates/otpEmail';
 import { tokens } from './../../shared/lib/token';
-import { IAuthRepository } from './auth.interface';
+import { IAuthRepository, IAuthService } from './auth.interface';
 import {
     LoginDto,
     LoginResponseDto,
@@ -16,7 +16,7 @@ import {
     VerifyOtpResponseDto,
 } from './auth.types';
 
-export class AuthService {
+export class AuthService implements IAuthService {
     constructor(private readonly authRepository: IAuthRepository) {}
 
     public async register(dto: RegisterDto): Promise<RegisterResponseDto> {
@@ -94,8 +94,12 @@ export class AuthService {
     public async verifyEmail(dto: VerifyOtpDto): Promise<VerifyOtpResponseDto> {
         const { otp, identifier } = dto;
 
+        const hashedIdentifier = crypto
+            .createHash('sha256')
+            .update(identifier)
+            .digest('hex');
         const otpRecord =
-            await this.authRepository.findOtpByIdentifier(identifier);
+            await this.authRepository.findOtpByIdentifier(hashedIdentifier);
 
         if (!otpRecord || otpRecord.expiresAt < new Date()) {
             throw new ValidationError('OTP has expired or is invalid');
