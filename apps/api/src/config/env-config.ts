@@ -12,7 +12,7 @@ if (!databaseUrl) {
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) throw new Error('JWT Secret Is Required!!!');
 
-const refreshJWTSecret = process.env.REFRESH_JWT_SECRET;
+const refreshJWTSecret = process.env.REFREST_JWT_SECRET;
 if (!refreshJWTSecret) throw new Error('Refresh JWT Secret Is Required!!!');
 
 export const config = {
