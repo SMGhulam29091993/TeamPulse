@@ -39,5 +39,5 @@ export const config = {
     jwtSecret,
     refreshJWTSecret,
     refreshMaxAge:
-        Number(process.env.REFRESH_MAX_AGE) ?? 1000 * 60 * 60 * 24 * 7,
+        Number(process.env.REFRESH_MAX_AGE) || 1000 * 60 * 60 * 24 * 7,
 };
