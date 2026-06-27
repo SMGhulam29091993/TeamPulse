@@ -35,7 +35,7 @@ export class AuthRepository implements IAuthRepository {
             expiresAt: payload.expiresAt,
         };
         await this.prisma.otpVerification.upsert({
-            where: { hashedIdentifier: payload.hashedIdentifier },
+            where: { userId: payload.userId },
             update: updatePayload,
             create: payload,
         });
