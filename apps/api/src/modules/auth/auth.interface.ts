@@ -4,6 +4,7 @@ import {
     LoginDto,
     LoginResponseDto,
     OtpDto,
+    PartialUser,
     RegisterDto,
     RegisterResponseDto,
     VerifyOtpDto,
@@ -27,4 +28,5 @@ export interface IAuthService {
     register(dto: RegisterDto): Promise<RegisterResponseDto>;
     verifyEmail(dto: VerifyOtpDto): Promise<VerifyOtpResponseDto>;
     login(dto: LoginDto): Promise<LoginResponseDto>;
+    getMe(userId: string): Promise<PartialUser>;
 }

@@ -4,6 +4,7 @@ import { asyncHandler } from '../../shared/utils/asyncHandler';
 import { AuthController } from './auth.controller';
 import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
+import { AuthMiddleware } from '../../shared/middlewares/auth.middleware';
 
 const authRepository = new AuthRepository(prisma);
 const authService = new AuthService(authRepository);
@@ -14,5 +15,10 @@ const route: express.Router = express.Router();
 route.post('/register', asyncHandler(authController.register));
 route.post('/verify-email', asyncHandler(authController.verifyEmail));
 route.post('/login', asyncHandler(authController.login));
+route.get(
+    '/me',
+    AuthMiddleware.authenticate,
+    asyncHandler(authController.getMe)
+);
 
 export default route;

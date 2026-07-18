@@ -9,6 +9,7 @@ import {
     VerifyOtpDto,
     VerifyOtpResponseDto,
 } from './auth.types';
+import { JWTError } from '../../shared/errors/jwtError';
 
 export class AuthController {
     constructor(private readonly authService: IAuthService) {}
@@ -67,5 +68,15 @@ export class AuthController {
         res.cookie('refreshToken', refreshToken, cookieOptions);
 
         return successResponse(res, 200, 'Login Successful.', { accessToken });
+    };
+
+    getMe = async (req: Request, res: Response, _next: NextFunction) => {
+        const userId = req.user?.id;
+        if (!userId) {
+            throw new JWTError('User might not be authenticated.');
+        }
+
+        const user = await this.authService.getMe(userId);
+        return successResponse(res, 200, 'User fetched successfully', user);
     };
 }

@@ -46,3 +46,26 @@ export interface OtpDto {
     userId: string;
     expiresAt: Date;
 }
+
+export interface User {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+    hashedPassword: string;
+    isEmailVerified: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface PartialUser {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+    isEmailVerified: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}

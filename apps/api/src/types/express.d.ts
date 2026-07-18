@@ -1,10 +1,6 @@
 import 'express';
-
-declare module 'express-serve-static-core' {
+declare module 'express' {
     export interface Request {
-        user?: {
-            id: string;
-            jti: string;
-        };
+        user?: { id: string };
     }
 }

@@ -10,11 +10,13 @@ import { IAuthRepository, IAuthService } from './auth.interface';
 import {
     LoginDto,
     LoginResponseDto,
+    PartialUser,
     RegisterDto,
     RegisterResponseDto,
     VerifyOtpDto,
     VerifyOtpResponseDto,
 } from './auth.types';
+import { User } from './auth.types';
 
 export class AuthService implements IAuthService {
     constructor(private readonly authRepository: IAuthRepository) {}
@@ -154,6 +156,22 @@ export class AuthService implements IAuthService {
         );
 
         return { accessToken, refreshToken };
+    }
+
+    public async getMe(userId: string): Promise<PartialUser> {
+        const user = await this.authRepository.findById(userId);
+        if (!user) throw new NotFoundError('User not found');
+
+        return {
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            username: user.username,
+            email: user.email,
+            isEmailVerified: user.isEmailVerified,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+        };
     }
 
     private async hashPassword(password: string): Promise<string> {
